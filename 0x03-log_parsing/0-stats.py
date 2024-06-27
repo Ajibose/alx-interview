@@ -39,6 +39,7 @@ def log_parse():
             match = re.fullmatch(pattern, line)
 
             if not match:
+                i += 1
                 continue
 
             print(line)
