@@ -1,68 +1,57 @@
-#!/usr/bin/python3
-"""Write a script that reads stdin line by line and computes metrics:
-
-Input format: <IP Address> - [<date>] "GET /projects/260 HTTP/1.1"
-<status code> <file size> (if the format is not this one, the line
-must be skipped)
-After every 10 lines and/or a keyboard interruption (CTRL + C),
-print these statistics from the beginning:
-Total file size: File size: <total size>
-where <total size> is the sum of all previous <file size>
-(see input format above)
-Number of lines by status code:
-possible status code: 200, 301, 400, 401, 403, 404, 405 and 500
-if a status code doesn’t appear or is not an integer,
-don’t print anything for this status code
-format: <status code>: <number>
-status codes should be printed in ascending order
-
-line list = [<IP Address>, -, [<date>], "GET /projects/260 HTTP/1.1",
-<status code>, <file size>]
-"""
-
-
+#!/usr/bin/env python3
+"""Log parsing"""
 import sys
+import signal
+import os
+import re
 
-# store the count of all status codes in a dictionary
-status_codes_dict = {'200': 0, '301': 0, '400': 0, '401': 0, '403': 0,
-                     '404': 0, '405': 0, '500': 0}
 
-total_size = 0
-count = 0  # keep count of the number lines counted
+def pipe_handler(signum, frame):
+    signame = signal.Signals(signum).name
+    devnull = os.open(os.devnull, os.O_WRONLY)
+    os.dup2(devnull, sys.stdout.fileno())
+    sys.stdout.flush()
+    sys.exit(1)
 
-try:
-    for line in sys.stdin:
-        line_list = line.split(" ")
 
-        if len(line_list) > 4:
-            status_code = line_list[-2]
-            file_size = int(line_list[-1])
+signal.signal(signal.SIGPIPE, pipe_handler)
 
-            # check if the status code receive exists in the dictionary and
-            # increment its count
-            if status_code in status_codes_dict.keys():
-                status_codes_dict[status_code] += 1
 
-            # update total size
-            total_size += file_size
+def output_display(total_size, status_codes):
+    """display output"""
+    sys.stdout.write("File size {}\n".format(total_size))
+    for status in status_codes:
+        if status_codes[status] > 0:
+            sys.stdout.write("{}: {}\n".format(status, status_codes[status]))
 
-            # update count of lines
-            count += 1
 
-        if count == 10:
-            count = 0  # reset count
-            print('File size: {}'.format(total_size))
+def log_parse():
+    """reads stdin line by line and computes metrics"""
+    i = 0
+    total_size = 0
+    pattern = r"[0-9.]+ - \[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d+\] \"GET \/projects\/260 HTTP\/1.1\" (\d{3})? (\d+)"
+    status_codes = {200: 0, 301: 0, 400: 0, 401: 0, 403: 0, 404: 0, 405: 0, 500: 0}
 
-            # print out status code counts
-            for key, value in sorted(status_codes_dict.items()):
-                if value != 0:
-                    print('{}: {}'.format(key, value))
+    try:
+        for line in sys.stdin:
+            line = line.strip()
+            match = re.fullmatch(pattern, line)
 
-except Exception as err:
-    pass
+            if line != match.group():
+                i += 1
+                continue
 
-finally:
-    print('File size: {}'.format(total_size))
-    for key, value in sorted(status_codes_dict.items()):
-        if value != 0:
-            print('{}: {}'.format(key, value))
+            status_code, size = match.groups()
+            status_code = int(status_code)
+            status_codes[status_code] += 1
+            total_size += int(size)
+            if i % 10 == 0 and i > 0:
+                output_display(total_size, status_codes)
+            i += 1
+    except KeyboardInterrupt:
+        output_display(total_size, status_codes)
+        sys.stdout.flush()
+        return
+
+if __name__ == '__main__':
+    log_parse()
