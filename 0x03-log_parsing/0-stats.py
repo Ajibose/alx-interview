@@ -45,7 +45,10 @@ def log_parse():
 
             _, _, status_code, size = match.groups()
             total_size += int(size)
-            status_code = int(status_code)
+            try:
+                status_code = int(status_code)
+            except:
+                continue
             status_codes[status_code] += 1
             if i == 10:
                 i = 0 
