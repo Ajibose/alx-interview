@@ -37,7 +37,7 @@ def log_parse():
             line = line.strip()
             match = re.fullmatch(pattern, line)
 
-            if line != match.group():
+            if not match:
                 continue
 
             status_code, size = match.groups()
