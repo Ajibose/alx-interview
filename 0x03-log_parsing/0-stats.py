@@ -29,10 +29,11 @@ def log_parse():
     """reads stdin line by line and computes metrics"""
     i = 1
     total_size = 0
-    #pattern = r"[0-9a-zA-Z.]+( )?-( )?\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d+\] \"GET \/projects\/260 HTTP\/1.1\" ([0-9a-zA-Z]+)? (\d+)"
-    pattern = r"[0-9a-zA-Z.]+( )?-( )?\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d+\] \"GET \/projects\/260 HTTP\/1.1\" ([0-9a-zA-Z]+)? (\d+)"
-    #pattern = r"[0-9.]+ - \[[\d-]+ [\d:]+\.\d+\] \"GET \/projects\/260 HTTP\/1.1\" (\d{3})? (\d+)"
-    status_codes = {200: 0, 301: 0, 400: 0, 401: 0, 403: 0, 404: 0, 405: 0, 500: 0}
+    pattern = r"[0-9a-zA-Z.]+( )?-( )?\[\d{4}-\d{2}-\d{2} " \
+              r"\d{2}:\d{2}:\d{2}\.\d+\] \"GET \/projects\/260" \
+              r"HTTP\/1.1\" ([0-9a-zA-Z]+)? (\d+)"
+    status_codes = {200: 0, 301: 0, 400: 0, 401: 0,
+                    403: 0, 404: 0, 405: 0, 500: 0}
 
     try:
         for line in sys.stdin:
@@ -47,11 +48,11 @@ def log_parse():
             total_size += int(size)
             try:
                 status_code = int(status_code)
-            except:
+            except Exception:
                 continue
             status_codes[status_code] += 1
             if i == 10:
-                i = 0 
+                i = 0
                 output_display(total_size, status_codes)
             i += 1
     except Exception:
@@ -61,6 +62,7 @@ def log_parse():
 
     finally:
         output_display(total_size, status_codes)
+
 
 if __name__ == '__main__':
     log_parse()
