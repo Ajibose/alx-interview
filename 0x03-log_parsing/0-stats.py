@@ -51,7 +51,7 @@ def log_parse():
     except KeyboardInterrupt:
         output_display(total_size, status_codes)
         sys.stdout.flush()
-        return
+        raise
 
 if __name__ == '__main__':
     log_parse()
