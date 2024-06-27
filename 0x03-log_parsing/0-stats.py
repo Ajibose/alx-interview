@@ -29,7 +29,8 @@ def log_parse():
     """reads stdin line by line and computes metrics"""
     i = 1
     total_size = 0
-    pattern = r"[0-9.]+ - \[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d+\] \"GET \/projects\/260 HTTP\/1.1\" (\d{3})? (\d+)"
+    #pattern = r"[0-9.]+ - \[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d+\] \"GET \/projects\/260 HTTP\/1.1\" (\d{3})? (\d+)"
+    pattern = r"[0-9.]+ - \[[\d-]+ [\d:]+\.\d+\] \"GET \/projects\/260 HTTP\/1.1\" (\d{3})? (\d+)"
     status_codes = {200: 0, 301: 0, 400: 0, 401: 0, 403: 0, 404: 0, 405: 0, 500: 0}
 
     try:
