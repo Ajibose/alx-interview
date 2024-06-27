@@ -19,7 +19,7 @@ signal.signal(signal.SIGPIPE, pipe_handler)
 
 def output_display(total_size, status_codes):
     """display output"""
-    sys.stdout.write("File size {}\n".format(total_size))
+    sys.stdout.write("File size: {}\n".format(total_size))
     for status in status_codes:
         if status_codes[status] > 0:
             sys.stdout.write("{}: {}\n".format(status, status_codes[status]))
