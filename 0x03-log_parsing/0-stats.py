@@ -45,13 +45,17 @@ def log_parse():
             status_code = int(status_code)
             status_codes[status_code] += 1
             total_size += int(size)
-            if i % 10 == 0 and i > 0:
+            if i == 10:
+                i = 0 
                 output_display(total_size, status_codes)
             i += 1
     except KeyboardInterrupt:
         output_display(total_size, status_codes)
         sys.stdout.flush()
         raise
+
+    finally:
+        output_display(total_size, status_codes)
 
 if __name__ == '__main__':
     log_parse()
