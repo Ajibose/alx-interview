@@ -61,11 +61,11 @@ def log_parse():
                 """status_code = convert_to_int(status_code)
                 if status_code:"""
             status_codes[status_code] += 1
-            i += 1
 
             if i == 10:
                 i = 0
                 output_display(total_size, status_codes)
+            i += 1
     except Exception:
         output_display(total_size, status_codes)
         sys.stdout.flush()
