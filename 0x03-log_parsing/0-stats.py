@@ -49,18 +49,16 @@ def log_parse():
             line = line.strip()
             match = re.fullmatch(pattern, line)
 
-            if not match:
-                i += 1
-                continue
-            _, _, status_code, size = match.groups()
-            total_size += int(size)
-            try:
-                status_code = int(status_code)
-            except Exception:
-                continue
+            if match:
+                _, _, status_code, size = match.groups()
+                total_size += int(size)
+                try:
+                    status_code = int(status_code)
+                except Exception:
+                    continue
                 """status_code = convert_to_int(status_code)
                 if status_code:"""
-            status_codes[status_code] += 1
+                status_codes[status_code] += 1
 
             if i == 10:
                 i = 0
