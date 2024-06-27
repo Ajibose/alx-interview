@@ -25,6 +25,15 @@ def output_display(total_size, status_codes):
             sys.stdout.write("{}: {}\n".format(status, status_codes[status]))
 
 
+def convert_to_int(num):
+    try:
+        val = int(num)
+    except Exception:
+        val = None
+    finally:
+        return val
+
+
 def log_parse():
     """reads stdin line by line and computes metrics"""
     i = 1
@@ -40,21 +49,21 @@ def log_parse():
             line = line.strip()
             match = re.fullmatch(pattern, line)
 
-            if not match:
+            if match:
+                _, _, status_code, size = match.groups()
+                total_size += int(size)
+                """try:
+                    status_code = int(status_code)
+                except Exception:
+                    continue"""
+                status_code = convert_to_int(status_code)
+                if status_code:
+                    status_codes[status_code] += 1
                 i += 1
-                continue
 
-            _, _, status_code, size = match.groups()
-            total_size += int(size)
-            try:
-                status_code = int(status_code)
-            except Exception:
-                continue
-            status_codes[status_code] += 1
             if i == 10:
                 i = 0
                 output_display(total_size, status_codes)
-            i += 1
     except Exception:
         output_display(total_size, status_codes)
         sys.stdout.flush()
